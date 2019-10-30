@@ -43,28 +43,42 @@ if __name__=='__main__':
         def help_exit(self):
             print('exit the application. Shorthand: x q Ctrl-D.')
     
-        def do_add(self, name, dldir, http):
-            '''To add a new channel type: add 'name of the channel' 'download directory' https://youtube.com/channel/xxxxxx\n where the x's are the channel id or name'''
+        def do_add(self,name,dldir,http):
+            '''To add a new channel type: add name of the channel,download directory,https://youtube.com/channel/xxxxxx\n where the x's are the channel id or name'''
+            
             proc = subprocess.Popen(["./ytcm.py", "-a", name , dldir, http], stdout=subprocess.PIPE)
             out = proc.stdout.read()
             c.output(out, 'green')
-            # add_string = "./ytcm.py -a \"" + name + "\" \"" + dldir + "\" "  + http
-            # os.system(add_string)
-            # print("adding %s" % add_string)
 
       
-        def do_update(self):
+        def do_update(self,inp):
             '''This will update all channel videos'''
             proc = subprocess.Popen(["./ytcm.py", "-u"], stdout=subprocess.PIPE)
             out = proc.stdout.read()
             c.output(out, 'green')
+            self.do_list
        
-        def do_mark(self):
+        def do_mark(self,inp):
             '''This will mark all videos downloaded.'''
             proc = subprocess.Popen(["./ytcm.py", "-m"], stdout=subprocess.PIPE)
             out = proc.stdout.read()
             c.output(out, 'green')
 
+        def do_listvideos(self,inp):
+            '''This will list all videos in the queue'''
+            proc = subprocess.Popen(["./ytcm.py", "-l"], stdout=subprocess.PIPE)
+            while True:
+                nextline = proc.stdout.readline()
+                if len(nextline) >=1:
+                    c.output(nextline, 'green')
+                else:
+                    break
+
+        def do_delete(self,chan):
+            '''This is to delete a channel from your subscriptions delete \"channel name\"'''
+            proc = subprocess.Popen(["./ytcm.py", "-r", chan], stdout=subprocess.PIPE)
+            out = proc.stdout.read()
+            c.output(out, 'magenta')            
       
         def do_download(self, inp):
             '''This will download all videos in the queue.'''
@@ -72,7 +86,7 @@ if __name__=='__main__':
             out = proc.stdout.read()
             c.output(out, 'green')
         
-        def do_list(self):
+        def do_list(self,inp):
             '''This will list all channels you are monitoring'''
             channel_list = get_chan_list()
             c.output(channel_list, 'green')
@@ -80,6 +94,8 @@ if __name__=='__main__':
         def default(self, inp):
             if inp == 'x' or inp == 'q':
                 return self.do_exit(inp)
+            if inp == 'lv':
+                return self.do_listvideos(inp)
 
         def do_raise(self, *args):
             raise Exception('Some Error')

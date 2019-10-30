@@ -264,6 +264,7 @@ class YTCM:
 
         try:
             self.database.add_channel(Channel(displayname=displayname,dldir=dldir, yt_channelid=yt_channelid))
+            print("%s Channel Added" % displayname)
         except sqlalchemy.exc.IntegrityError:
             raise DuplicateChannelException(f"Channel already subscribed: {displayname}")
 
@@ -341,6 +342,7 @@ class YTCM:
         :param displaynames: The names of channels to delete.
         """
         self.database.delete_channels(displaynames)
+        print("%s deleted" % displaynames)
 
     def rename_channel(self, oldname: str, newname: str) -> None:
         """Rename the given channel.

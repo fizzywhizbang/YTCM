@@ -24,7 +24,10 @@ just extend with do_something  method to handle your commands"""
     def __call__(self,line):
         tokens=line.split()
         cmd=tokens[0].lower()
-        args=tokens[1:]
+        #because of potential spaces in names as on arg I will split at the comma
+        line=line.replace(cmd + " ","")
+        tokens2=line.split(",")
+        args=tokens2[0:]
         if cmd in self._quit_cmd:
             return Commander.Exit
         elif cmd in self._help_cmd:
