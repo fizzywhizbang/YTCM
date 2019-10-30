@@ -2,11 +2,14 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 import os
 
+
 def channels_update():
-    os.system('./ytcm.py -u -jd') #run monitor
+    os.system('./ytcm.py -u -d')
 
 
-os.system('./ytcm.py -u -jd') #run initial start script
-scheduler = BlockingScheduler()
-scheduler.add_job(channels_update, 'interval', hours=1)
-scheduler.start()
+
+def run():
+    channels_update
+    scheduler = BlockingScheduler()
+    scheduler.add_job(channels_update, 'interval', hours=1)
+    scheduler.start()
