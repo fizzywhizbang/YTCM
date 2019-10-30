@@ -27,6 +27,7 @@ from typing import Iterable, List, TextIO, Optional, Any, Dict, BinaryIO
 from urllib.error import URLError
 from urllib.parse import urlparse, urlunparse, parse_qs
 from urllib.request import urlopen
+import json
 
 import sqlalchemy
 import youtube_dl
@@ -138,39 +139,28 @@ class YTCM:
         yt_channel_id = channel.yt_channelid
         url = _get_youtube_rss_url(yt_channel_id)
         feed = feedparser.parse(url)
-        return [
-            Video(
-                yt_videoid=str(entry.yt_videoid),
-                title=str(entry.title),
-                description=str(entry.description),
-                publisher=yt_channel_id,
-                publish_date=time.mktime(entry.published_parsed),
-                watched=False
-            )
-            for entry in feed.entries
-        ]
-            
-    @staticmethod
-    def _get_all_videos(channel: Channel) -> List[Video]:
-        yt_channel_id = channel.yt_channelid             
         channel2 = "https://www.youtube.com/channel/%s" % yt_channel_id
+        proc = subprocess.Popen(["youtube-dl", "-j", "--flat-playlist", channel2], stdout=subprocess.PIPE)
+        #b'{"_type": "url", "url": "aWC87Z9CMkg", "ie_key": "Youtube", "id": "aWC87Z9CMkg", "title": "Morning routine! (New!)"}\n'
+        arr = []
+        while True:
+            nextline = proc.stdout.readline()
+            if len(nextline) >=1:
+                jsonarr=json.loads(nextline)
+                arr += [
+                Video(
+                    yt_videoid=str(jsonarr["url"]),
+                    title=str(jsonarr["title"]),
+                    description=str(jsonarr["title"]),
+                    publisher=yt_channel_id,
+                    publish_date=0,
+                    watched=False
+                )]
+            else:
+                break
         
-        with youtube_dl.YoutubeDL({'dump_single_json': 1, 'extract_flat': 1}) as ydl:
-
-            playlist_dict = ydl.extract_info(channel2, download=False)
-               
-        return [
-            Video(
-                yt_videoid=str(video.get('id')),
-                title=str(video.get('title')),
-                description=str(video.get("description")),
-                publisher=yt_channel_id,
-                publish_date=video.get('upload_date'),
-                watched=False
-            )
-            for video in playlist_dict['entries']
-        ]    
-
+        return arr
+            
     def update_all(self) -> None:
         """Check every channel for new videos."""
         channels = self.database.get_channels()
@@ -318,14 +308,15 @@ class YTCM:
                 .order_by(*self.config.order_by).all()
 
         if not self.date_end_filter[1]:
-            date_end_filter = time.mktime(time.gmtime()) + 20
+            date_end_filter = 0
         else:
             date_end_filter = self.date_end_filter[0]
 
         query = self.database.session.query(Video) \
-            .join(Channel, Channel.yt_channelid == Video.publisher) \
-            .filter(Video.publish_date > self.date_begin_filter) \
-            .filter(Video.publish_date < date_end_filter)
+            .join(Channel, Channel.yt_channelid == Video.publisher) 
+            # \
+            # .filter(Video.publish_date > self.date_begin_filter) \
+            # .filter(Video.publish_date < date_end_filter)
 
         if self.channel_filter:
             query = query.filter(Channel.displayname.in_(self.channel_filter))

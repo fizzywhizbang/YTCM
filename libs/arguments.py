@@ -73,7 +73,7 @@ def get_args() -> argparse.Namespace:
     parser.add_argument("-u", "--update",
                         help=_("update the video list"),
                         action="store_true")
-
+                        
     parser.add_argument("-l", "--list",
                         help=_("print a list of videos that match the criteria given by the "
                                "filter options"),

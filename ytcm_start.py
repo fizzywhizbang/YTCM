@@ -50,7 +50,10 @@ if __name__=='__main__':
             out = proc.stdout.read()
             c.output(out, 'green')
 
-      
+        def do_get_all(self,inp):
+            '''Use this to rip all videos from a channel. Be careful it could be slooooow'''
+            
+
         def do_update(self,inp):
             '''This will update all channel videos'''
             proc = subprocess.Popen(["./ytcm.py", "-u"], stdout=subprocess.PIPE)

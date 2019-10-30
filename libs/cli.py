@@ -315,6 +315,7 @@ def download_video(video: Video, audio_only: bool = False) -> None:
     if not success:
         print(_("An Error occured while downloading the video"))
 
+
 @register_option("mark_downloaded")
 def mark_watched(video_ids: List[int]) -> None:
     core.set_video_id_filter(video_ids)
@@ -341,7 +342,7 @@ def download(video_ids: List[int]) -> None:
 def update_all() -> None:
     print(_("Updating channels..."))
     core.update_all()
-
+ 
 
 @register_option("list")
 def list_videos() -> None:
