@@ -1,6 +1,6 @@
 '''
 Created on Aug 2, 2015
-
+https://github.com/izderadicka?tab=repositories
 @author: ivan
 '''
 import urwid
