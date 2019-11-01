@@ -22,8 +22,8 @@ from libs.commander import Commander
 from threading import Thread
 import threading
 import subprocess
-from apscheduler.schedulers.blocking import BlockingScheduler
 import os
+from time import sleep
 
 
 def get_chan_list() -> str:
@@ -121,9 +121,7 @@ if __name__=='__main__':
     def run():
         c.output("Monitoring Channels For Updates", "green")
         channels_update()
-        scheduler = BlockingScheduler()
-        scheduler.add_job(channels_update(), 'interval', hours=1)
-        scheduler.start()
+        sleep(60*60) #wait one hour before looping so as not to get banned by YT
 
 
     t=Thread(target=run)
