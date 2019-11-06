@@ -24,7 +24,7 @@ import threading
 import subprocess
 import os
 from time import sleep
-
+import datetime
 
 def get_chan_list() -> str:
     proc = subprocess.Popen(["./ytcm.py", "-c"], stdout=subprocess.PIPE)
@@ -32,7 +32,8 @@ def get_chan_list() -> str:
     return out
     # os.system('./ytcm.py -c')
 
-
+def now():
+    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 if __name__=='__main__':
     class TestCmd(Command):
@@ -49,6 +50,8 @@ if __name__=='__main__':
             proc = subprocess.Popen(["./ytcm.py", "-a", name , dldir, http], stdout=subprocess.PIPE)
             out = proc.stdout.read()
             c.output(out, 'green')
+            # proc = subprocess.Popen(["./ytcm.py", "-d", name , dldir, http], stdout=subprocess.PIPE)
+            self.do_listvideos("null")
 
         def do_get_all(self,inp):
             '''Use this to rip all videos from a channel. Be careful it could be slooooow'''
@@ -109,19 +112,22 @@ if __name__=='__main__':
     import time
     def channels_update():
         # os.system('./ytcm.py -u -d')
-        c.output("starting update:", "magenta")
+        c.output("starting update: {}".format(now()), "magenta")
         proc = subprocess.Popen(["./ytcm.py", "-u", "-d"], stdout=subprocess.PIPE)
         while True:
             nextline = proc.stdout.readline()
             if len(nextline) >=1:
                 c.output(nextline, 'magenta')
-            
+            else:
+                break
+        c.output("update complete: {}".format(now()), "green")    
                 
 
     def run():
-        c.output("Monitoring Channels For Updates", "green")
-        channels_update()
-        sleep(60*60) #wait one hour before looping so as not to get banned by YT
+        while True:
+            c.output("Monitoring Channels For Updates", "green")
+            channels_update()
+            sleep(60*60) #wait one hour before looping so as not to get banned by YT
 
 
     t=Thread(target=run)

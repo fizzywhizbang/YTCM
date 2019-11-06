@@ -141,7 +141,7 @@ class YTCM:
         feed = feedparser.parse(url)
         channel2 = "https://www.youtube.com/channel/%s" % yt_channel_id
         proc = subprocess.Popen(["youtube-dl", "-j", "--flat-playlist", channel2], stdout=subprocess.PIPE)
-        #b'{"_type": "url", "url": "aWC87Z9CMkg", "ie_key": "Youtube", "id": "aWC87Z9CMkg", "title": "Morning routine! (New!)"}\n'
+        
         arr = []
         while True:
             nextline = proc.stdout.readline()
