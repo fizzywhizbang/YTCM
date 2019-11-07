@@ -170,6 +170,16 @@ class YTCM:
             videos = chain.from_iterable(pool.map(self._update_channel, channels))
 
         self.database.add_videos(videos)
+    
+    def update_one(self,yt_channel_id) -> None:
+        """Check every channel for new videos."""
+        channels = self.database.get_channels_filter(yt_channel_id) #for channel 
+        num_workers = unpack_optional(os.cpu_count(), lambda: 1) * 2
+        
+        with Pool(num_workers) as pool:
+            videos = chain.from_iterable(pool.map(self._update_channel, channels))
+
+        self.database.add_videos(videos)
 
     def download_video(self, video: Video, path: str = "", audio_only: bool = False, publisherID: str = "", videotitle: str = "") -> bool:
         """Download the given video with youtube-dl and mark it as downloaded.
@@ -255,6 +265,7 @@ class YTCM:
         try:
             self.database.add_channel(Channel(displayname=displayname,dldir=dldir, yt_channelid=yt_channelid))
             print("%s Channel Added" % displayname)
+            self.update_one(yt_channelid) #get all videos for channel when adding
         except sqlalchemy.exc.IntegrityError:
             raise DuplicateChannelException(f"Channel already subscribed: {displayname}")
 

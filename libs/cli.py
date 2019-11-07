@@ -343,6 +343,9 @@ def update_all() -> None:
     print(_("Updating channels..."))
     core.update_all()
  
+@register_option("updateone")
+def update_one(channel: str):
+    print(channel)
 
 @register_option("list")
 def list_videos() -> None:

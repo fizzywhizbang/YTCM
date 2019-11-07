@@ -50,7 +50,7 @@ if __name__=='__main__':
             proc = subprocess.Popen(["./ytcm.py", "-a", name , dldir, http], stdout=subprocess.PIPE)
             out = proc.stdout.read()
             c.output(out, 'green')
-            # proc = subprocess.Popen(["./ytcm.py", "-d", name , dldir, http], stdout=subprocess.PIPE)
+            proc = subprocess.Popen(["./ytcm.py", "-u"], stdout=subprocess.PIPE)
             self.do_listvideos("null")
 
         def do_get_all(self,inp):

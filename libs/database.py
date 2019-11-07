@@ -86,6 +86,9 @@ class Database:
 
     def get_channels(self) -> List[Channel]:
         return self.session.query(Channel).order_by(Channel.displayname).all()
+    
+    def get_channels_filter(self,yt_channelid1) -> List[Channel]:
+        return self.session.query(Channel).filter_by(yt_channelid=yt_channelid1).all()
 
     def get_channel_dir(self, yt_channelid1: str) -> String:
         test = self.session.query(Channel.dldir).filter_by(yt_channelid=yt_channelid1).one()
